@@ -6,13 +6,18 @@ played = ref([])
 
 def track(m)
   f = m['filename']
-  print("song: #{f} (#{float(list.length(!played)) / 10.}%)")
+  print(newline=false, "song: #{f} (#{float(list.length(!played)) / 10.}%)\r")
   if list.mem(f, !played) then
     print("already present among #{list.length(!played)}")
     shutdown()
   end
   played := list.add(f, !played)
 end
-s = playlist("files")
+def reload(_)
+  print("Reloading!")
+  played := []
+end
+
+s = playlist(on_reload=reload, "files")
 s.on_track(track)
 output.dummy(fallible=true, s)
