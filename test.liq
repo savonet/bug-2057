@@ -3,21 +3,23 @@ log.level.set(1)
 settings.decoder.priorities.mad.set(1000)
 
 played = ref([])
+total = 10
 
-def track(m)
+def on_track(m)
   f = m['filename']
-  print(newline=false, "song: #{f} (#{float(list.length(!played)) / 10.}%)\r")
+  print("song: #{f} (#{float(list.length(!played)) / float(total) * 100.}%)")
   if list.mem(f, !played) then
     print("already present among #{list.length(!played)}")
-    shutdown()
+    exit(1)
   end
   played := list.add(f, !played)
 end
-def reload(_)
-  print("Reloading!")
+
+def on_reload(_)
+  print("Reloading!...")
   played := []
 end
 
-s = playlist(on_reload=reload, "files")
-s.on_track(track)
+s = playlist(on_reload=on_reload, reload=1, reload_mode="rounds", "files")
+s.on_track(on_track)
 output.dummy(fallible=true, s)
